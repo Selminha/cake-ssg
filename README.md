@@ -1,1 +1,1 @@
-cake
+cake-ssg

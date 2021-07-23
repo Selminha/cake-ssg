@@ -1,7 +1,7 @@
 {
-  "name": "cake",
-  "version": "1.0.0",
-  "description": "cake",
+  "name": "cake-ssg",
+  "version": "0.0.1",
+  "description": "cake-ssg",
   "main": "index.ts",
   "scripts": {
     "build": "tsc",
