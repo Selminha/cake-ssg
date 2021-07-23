@@ -1,7 +1,12 @@
 import * as fs from 'fs';
 
 class Cake {
-  constructor() {
+  templatePath: string;
+  dataPath: string;
+
+  constructor(templatePath: string, dataPath: string) {
+    this.templatePath = templatePath;
+    this.dataPath = dataPath;
   }
 }
 
