@@ -1,5 +1,5 @@
-import * as glob from 'glob';
 import { CakeOptions }  from './CakeOptions';
+import { HandlebarsTemplateBuilder } from './HandlebarsTemplateBuilder';
 
 export class Cake {
 
@@ -7,15 +7,14 @@ export class Cake {
 
   constructor(private userOptions?: CakeOptions) {
     const defaultOptions = {
-      templateGlob: 'templates/**/*.hbs',
-      dataGlob: 'content/**/*.json',
+      templateFolder: 'templates',
+      contentFolder: 'content',
     };
     this.options = { ...defaultOptions, ...userOptions};
   }
 
-  buildHtml(): void {
-    console.log(this.options.templateGlob);
-    const templates = glob.sync(this.options.templateGlob);
+  bake(): void {
+    const templates = new HandlebarsTemplateBuilder(this.options).build();
     console.log(templates);
   }
 }

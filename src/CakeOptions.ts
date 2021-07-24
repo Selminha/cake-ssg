@@ -1,4 +1,4 @@
 export interface CakeOptions {
-  templateGlob: string;
-  dataGlob: string;
+  templateFolder: string;
+  contentFolder: string;
 }
