@@ -1,2 +1,2 @@
 export * from './Cake';
-export * from './Options';
+export * from './CakeOptions';

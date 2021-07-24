@@ -1,18 +1,18 @@
 import * as glob from 'glob';
-import { Options }  from './Options';
+import { CakeOptions }  from './CakeOptions';
 
 export class Cake {
-  options: Options = new Options();
+  options: CakeOptions = new CakeOptions();
 
-  constructor(options?: Options) {
-    if(options) {
+  constructor(options?: CakeOptions) {
+    if (options) {
       this.options = options;
     }    
   }
 
   buildHtml() {
-    console.log(this.options.templatePattern);
-    var templates = glob.sync(this.options.templatePattern);
+    console.log(this.options.templateGlob);
+    var templates = glob.sync(this.options.templateGlob);
     console.log(templates);
   }
 }
