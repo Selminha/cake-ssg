@@ -1,8 +1,9 @@
 import * as fs from "fs";
 import { glob } from "glob";
 import Handlebars from "handlebars";
-import { CakeOptions } from "./CakeOptions";
+import { CakeOptions, HandlebarsOptions } from "./CakeOptions";
 import { TemplateBuilder, Templates } from "./TemplateBuilder";
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires */
 const wax = require('wax-on');
 
 export class HandlebarsTemplateBuilder extends TemplateBuilder {
@@ -20,7 +21,9 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
       },
     };
     this.options = { ...defaults, ...userOptions};
+    /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
     wax.on(Handlebars);
+    /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
     wax.setLayoutPath(this.options.templateFolder);
     this.compileAll();
     this.registerPartials();
@@ -36,8 +39,8 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
   }
 
   private registerPartials(): void {
-    // If template starts with the partials folder, then it is a partial: registerPartial and remove the folder from the name
-    const partialsFolder = `${this.options.handlebars?.partialsFolder}/`;
+    // If template is inside the partials folder: registerPartial removing the folder from the name
+    const partialsFolder = `${(this.options.handlebars as HandlebarsOptions).partialsFolder}/`;
     for (const name in this.templates) {
       if (name.startsWith(partialsFolder)) {
         Handlebars.registerPartial(name.substr(partialsFolder.length), this.templates[name]);
