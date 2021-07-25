@@ -32,7 +32,6 @@ export class Cake {
       console.log('file ' + filename + ' not found');
       return {};
     }
-    
   }
 
   private getPageTemplatePath(builder: HandlebarsTemplateBuilder, parsedPath: path.ParsedPath):string {
@@ -53,7 +52,6 @@ export class Cake {
       fs.promises.mkdir(htmlDir, { recursive: true })
       .then(x => fs.writeFile(htmlDir + this.BAR + filename + '.html',html, (err) => {
         if (err) throw err;
-        console.log('The file has been saved!');
       }));
     }
   }
