@@ -9,12 +9,13 @@ export class Cake {
     const defaultOptions = {
       templateFolder: 'templates',
       contentFolder: 'content',
+      outputFolder: 'dist',
     };
     this.options = { ...defaultOptions, ...userOptions};
   }
 
   bake(): void {
-    const templates = new HandlebarsTemplateBuilder(this.options).build();
-    console.log(templates);
+    const builder = new HandlebarsTemplateBuilder(this.options);
+    console.log(builder.render('index', {}));
   }
 }
