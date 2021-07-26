@@ -88,7 +88,7 @@ export class Cake {
         html = builder.render(templatepath, sections[parsedPath.dir]);
       } else {
         // Precisa colocar o meta
-        const page = { content: fileContents };
+        const page: Page = { content: fileContents };
         html = builder.render(templatepath, page);
       }
 
