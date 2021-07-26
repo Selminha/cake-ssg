@@ -4,6 +4,7 @@ import { CakeOptions }  from './CakeOptions';
 import { HandlebarsTemplateBuilder } from './HandlebarsTemplateBuilder';
 import { glob } from 'glob';
 import { Section } from './Section';
+import { Page } from './Page';
 import { JsonContentHandler } from './JsonContentHandler';
 
 export class Cake {
@@ -56,12 +57,13 @@ export class Cake {
       const contentFolderName = contentFolder.substring(this.options.contentFolder.length + this.BAR.length, contentFolder.length);
       const parsedPath = path.parse(contentFolderName);
       if (!sections[parsedPath.dir]) {
-        sections[parsedPath.dir] = { sections: [], pages: [] };
+
+        sections[parsedPath.dir] = { meta: { sections: [], pages: [] } };
       }
       if (fs.lstatSync(contentFolder).isDirectory()) {
-        sections[parsedPath.dir].sections.push(parsedPath.name);
+        sections[parsedPath.dir].meta.sections.push(parsedPath.name);
       } else {
-        sections[parsedPath.dir].pages.push(parsedPath.name);
+        sections[parsedPath.dir].meta.pages.push(parsedPath.name);
       }
     }
 
@@ -85,7 +87,9 @@ export class Cake {
         sections[parsedPath.dir].content = fileContents;
         html = builder.render(templatepath, sections[parsedPath.dir]);
       } else {
-        html = builder.render(templatepath, fileContents);
+        // Precisa colocar o meta
+        const page = { content: fileContents };
+        html = builder.render(templatepath, page);
       }
 
       this.writeHtml(html, parsedPath.dir, parsedPath.name);
