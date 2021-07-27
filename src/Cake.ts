@@ -78,17 +78,17 @@ export class Cake {
       const contentFileName = contentFile.substring(this.options.contentFolder.length + this.BAR.length, contentFile.length);
       const parsedPath = path.parse(contentFileName);
 
-      const fileContents = contentHandler.getFileContent(contentFile);
+      const fileContent = contentHandler.getFileContent(contentFile);
       const templatepath = this.getPageTemplatePath(builder, parsedPath);
 
       let html: string;
 
       if (parsedPath.name === this.SECTION) {
-        sections[parsedPath.dir].content = fileContents;
+        sections[parsedPath.dir].content = fileContent;
         html = builder.render(templatepath, sections[parsedPath.dir]);
       } else {
         // Precisa colocar o meta
-        const page: Page = { content: fileContents };
+        const page: Page = { content: fileContent };
         html = builder.render(templatepath, page);
       }
 

@@ -2,6 +2,8 @@ import * as fs from "fs";
 import { glob } from "glob";
 import Handlebars from "handlebars";
 import { CakeOptions, HandlebarsOptions } from "./CakeOptions";
+import { JsonContentHandler } from "./JsonContentHandler";
+import { Page } from "./Page";
 import { TemplateBuilder, Templates } from "./TemplateBuilder";
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires */
 const wax = require('wax-on');
@@ -25,6 +27,7 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
     wax.on(Handlebars);
     /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
     wax.setLayoutPath(this.options.templateFolder);
+    this.registerBuiltInHelpers();
     this.compileAll();
     this.registerPartials();
   }
@@ -46,6 +49,15 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
         Handlebars.registerPartial(name.substr(partialsFolder.length), this.templates[name]);
       }
     }
+  }
+
+  private registerBuiltInHelpers(): void {    
+    Handlebars.registerHelper('useContent', (value, options) => {
+      const contentHandler = new JsonContentHandler();
+      const fileContent = contentHandler.getFileContent(value);
+      const page: Page = { content: fileContent };
+      return options.fn(page);
+    });
   }
 
   exists(templateName: string): boolean {
