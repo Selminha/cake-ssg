@@ -28,8 +28,8 @@ export class Cake {
     };
     this.options = { ...defaultOptions, ...userOptions};
 
-    this.templateBuilder = new HandlebarsTemplateBuilder(this.options);
     this.contentHandler = new JsonContentHandler();
+    this.templateBuilder = new HandlebarsTemplateBuilder(this.options, this.contentHandler);
   }
 
   private getTemplatePath(templateBuilder: TemplateBuilder, parsedPath: path.ParsedPath): string {
@@ -53,7 +53,8 @@ export class Cake {
   }
 
   /**
-   * Reads the contents folder in order to retrieve SectionMeta for every folder
+   * First iterates the contents folder in order to retrieve SectionMeta for every section.
+   * Sections are dependant on each other so this first parse is necessary.
    */
   // TODO: refatorar para usar SectionMeta ao invés de Section
   private getSections(): Record<string, Section> {

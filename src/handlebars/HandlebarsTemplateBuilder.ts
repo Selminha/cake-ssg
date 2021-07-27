@@ -5,6 +5,8 @@ import { CakeOptions, HandlebarsOptions } from "../model/CakeOptions";
 import { JsonContentHandler } from "../json/JsonContentHandler";
 import { TemplateBuilder, Templates } from "../TemplateBuilder";
 import { Page } from "../model/Content";
+import { ContentHandler } from "../ContentHandler";
+import { HandlebarsHelpers } from "./HandlebarsHelpers";
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires */
 const wax = require('wax-on');
 
@@ -15,7 +17,7 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
   private templates: Templates = {};
   private options: CakeOptions;
 
-  constructor(userOptions: CakeOptions) {
+  constructor(userOptions: CakeOptions, private contentHandler: ContentHandler) {
     super();
     const defaults = {
       handlebars: {
@@ -52,12 +54,8 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
   }
 
   private registerBuiltInHelpers(): void {
-    Handlebars.registerHelper('useContent', (value, options: HelperOptions) => {
-      const contentHandler = new JsonContentHandler();
-      const fileContent = contentHandler.getContent(value);
-      const page: Page = { content: fileContent };
-      return options.fn(page);
-    });
+    const helpers = new HandlebarsHelpers(this.contentHandler);
+    Handlebars.registerHelper('useContent', helpers.useContent);
   }
 
   exists(templateName: string): boolean {
