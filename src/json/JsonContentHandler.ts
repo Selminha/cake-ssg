@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { ContentHandler } from './ContentHandler';
+import { ContentHandler } from '../ContentHandler';
 
 export class JsonContentHandler extends ContentHandler {
 

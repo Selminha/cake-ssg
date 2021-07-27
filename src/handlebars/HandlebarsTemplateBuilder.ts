@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import { glob } from "glob";
-import Handlebars from "handlebars";
-import { CakeOptions, HandlebarsOptions } from "./CakeOptions";
-import { JsonContentHandler } from "./JsonContentHandler";
-import { Page } from "./Page";
-import { TemplateBuilder, Templates } from "./TemplateBuilder";
+import Handlebars, { HelperOptions } from "handlebars";
+import { CakeOptions, HandlebarsOptions } from "../model/CakeOptions";
+import { JsonContentHandler } from "../json/JsonContentHandler";
+import { Page } from "../model/Page";
+import { TemplateBuilder, Templates } from "../TemplateBuilder";
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires */
 const wax = require('wax-on');
 
@@ -51,8 +51,8 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
     }
   }
 
-  private registerBuiltInHelpers(): void {    
-    Handlebars.registerHelper('useContent', (value, options) => {
+  private registerBuiltInHelpers(): void {
+    Handlebars.registerHelper('useContent', (value, options: HelperOptions) => {
       const contentHandler = new JsonContentHandler();
       const fileContent = contentHandler.getFileContent(value);
       const page: Page = { content: fileContent };

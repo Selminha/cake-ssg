@@ -1,11 +1,11 @@
-import * as path from 'path';
 import * as fs from 'fs';
-import { CakeOptions }  from './CakeOptions';
-import { HandlebarsTemplateBuilder } from './HandlebarsTemplateBuilder';
 import { glob } from 'glob';
-import { Section } from './Section';
-import { Page } from './Page';
-import { JsonContentHandler } from './JsonContentHandler';
+import * as path from 'path';
+import { CakeOptions } from './model/CakeOptions';
+import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilder';
+import { JsonContentHandler } from './json/JsonContentHandler';
+import { Page } from './model/Page';
+import { Section } from './model/Section';
 
 export class Cake {
 
@@ -39,10 +39,8 @@ export class Cake {
   private writeHtml(html: string, outDir: string, filename: string) {
     const htmlDir = this.options.outputFolder + this.BAR + outDir;
     if (html.length) {
-      fs.promises.mkdir(htmlDir, { recursive: true })
-      .then(x => fs.writeFile(htmlDir + this.BAR + filename + '.html',html, (err) => {
-        if (err) throw err;
-      }));
+      fs.mkdirSync(htmlDir, { recursive: true });
+      fs.writeFileSync(htmlDir + this.BAR + filename + '.html', html);
     }
   }
 
