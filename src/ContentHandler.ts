@@ -1,4 +1,5 @@
 export abstract class ContentHandler {
 
-  abstract getFileContent(filename: string): unknown;
+  /** Reads the file from given path and returns a JSON with its contents */
+  abstract getContent(filePath: string): unknown;
 }

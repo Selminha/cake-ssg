@@ -1,18 +1,23 @@
 import * as fs from 'fs';
 import { glob } from 'glob';
+import { Template } from 'handlebars';
 import * as path from 'path';
-import { CakeOptions } from './model/CakeOptions';
+import { ContentHandler } from './ContentHandler';
 import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilder';
 import { JsonContentHandler } from './json/JsonContentHandler';
-import { Page } from './model/Page';
-import { Section } from './model/Section';
+import { CakeOptions } from './model/CakeOptions';
+import { Page, Section } from './model/Content';
+import { TemplateBuilder } from './TemplateBuilder';
 
 export class Cake {
 
   private options: CakeOptions;
-  private readonly BAR = '/';
-  private readonly PAGE = 'page';
-  private readonly SECTION = 'index';
+  private static readonly BAR = '/';
+  private static readonly PAGE = 'page';
+  private static readonly INDEX = 'index';
+
+  private templateBuilder: TemplateBuilder;
+  private contentHandler: ContentHandler;
 
   constructor(private userOptions?: CakeOptions) {
     const defaultOptions = {
@@ -22,28 +27,35 @@ export class Cake {
       contentFileType: 'json',
     };
     this.options = { ...defaultOptions, ...userOptions};
+
+    this.templateBuilder = new HandlebarsTemplateBuilder(this.options);
+    this.contentHandler = new JsonContentHandler();
   }
 
-  private getPageTemplatePath(builder: HandlebarsTemplateBuilder, parsedPath: path.ParsedPath):string {
-    let templatepath: string = parsedPath.dir + this.BAR + parsedPath.name;
-    if (builder.exists(templatepath)) {
+  private getTemplatePath(templateBuilder: TemplateBuilder, parsedPath: path.ParsedPath): string {
+    let templatepath: string = parsedPath.dir + Cake.BAR + parsedPath.name;
+    if (templateBuilder.exists(templatepath)) {
       return templatepath;
     }
-    templatepath = parsedPath.dir + this.BAR + this.PAGE;
-    if (builder.exists(templatepath)) {
+    templatepath = parsedPath.dir + Cake.BAR + Cake.PAGE;
+    if (templateBuilder.exists(templatepath)) {
       return templatepath;
     }
-    return this.PAGE;
+    return Cake.PAGE;
   }
 
   private writeHtml(html: string, outDir: string, filename: string) {
-    const htmlDir = this.options.outputFolder + this.BAR + outDir;
+    const htmlDir = this.options.outputFolder + Cake.BAR + outDir;
     if (html.length) {
       fs.mkdirSync(htmlDir, { recursive: true });
-      fs.writeFileSync(htmlDir + this.BAR + filename + '.html', html);
+      fs.writeFileSync(htmlDir + Cake.BAR + filename + '.html', html);
     }
   }
 
+  /**
+   * Reads the contents folder in order to retrieve SectionMeta for every folder
+   */
+  // TODO: refatorar para usar SectionMeta ao invés de Section
   private getSections(): Record<string, Section> {
     const contentFolders = glob.sync(`${this.options.contentFolder}/**/**`);
     const sections: Record<string, Section> = {};
@@ -52,10 +64,9 @@ export class Cake {
         // ignore root content folder
         continue;
       }
-      const contentFolderName = contentFolder.substring(this.options.contentFolder.length + this.BAR.length, contentFolder.length);
+      const contentFolderName = contentFolder.substring(this.options.contentFolder.length + Cake.BAR.length, contentFolder.length);
       const parsedPath = path.parse(contentFolderName);
       if (!sections[parsedPath.dir]) {
-
         sections[parsedPath.dir] = { meta: { sections: [], pages: [] } };
       }
       if (fs.lstatSync(contentFolder).isDirectory()) {
@@ -68,34 +79,34 @@ export class Cake {
     return sections;
   }
 
-  private renderHtml(builder: HandlebarsTemplateBuilder) {
-    const contentHandler = new JsonContentHandler();
-    const sections = this.getSections();
-    const contentFiles = glob.sync(`${this.options.contentFolder}/**/*.*`);
-    for (const contentFile of contentFiles) {
-      const contentFileName = contentFile.substring(this.options.contentFolder.length + this.BAR.length, contentFile.length);
-      const parsedPath = path.parse(contentFileName);
+  /**
+   * Removes content folder from file path
+   * @returns ParsedPath without the content folder
+   */
+  private getContentParsedPath(contentPath: string): path.ParsedPath {
+    const contentFileName = contentPath.substring(this.options.contentFolder.length + Cake.BAR.length, contentPath.length);
+    return path.parse(contentFileName);
+  }
 
-      const fileContent = contentHandler.getFileContent(contentFile);
-      const templatepath = this.getPageTemplatePath(builder, parsedPath);
+  bake(): void {
+    const sections = this.getSections();
+    const contentPaths = glob.sync(`${this.options.contentFolder}/**/*.*`);
+    for (const contentPath of contentPaths) {
+      const parsedPath = this.getContentParsedPath(contentPath);
+      const content = this.contentHandler.getContent(contentPath);
+      const templatepath = this.getTemplatePath(this.templateBuilder, parsedPath);
 
       let html: string;
-
-      if (parsedPath.name === this.SECTION) {
-        sections[parsedPath.dir].content = fileContent;
-        html = builder.render(templatepath, sections[parsedPath.dir]);
+      if (parsedPath.name === Cake.INDEX) {
+        sections[parsedPath.dir].content = content;
+        html = this.templateBuilder.render(templatepath, sections[parsedPath.dir]);
       } else {
         // Precisa colocar o meta
-        const page: Page = { content: fileContent };
-        html = builder.render(templatepath, page);
+        const page: Page = { content: content };
+        html = this.templateBuilder.render(templatepath, page);
       }
 
       this.writeHtml(html, parsedPath.dir, parsedPath.name);
     }
-  }
-
-  bake(): void {
-    const builder = new HandlebarsTemplateBuilder(this.options);
-    this.renderHtml(builder);
   }
 }
