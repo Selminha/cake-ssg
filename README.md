@@ -1,4 +1,7 @@
-Coming soon!!!
+# **cake-ssg (Cake Static Site Generator)**
 
-
-This module is under development
+## Content file structure
+----
+### Sections
+Sections are 
+ 
