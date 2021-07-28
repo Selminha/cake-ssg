@@ -4,7 +4,7 @@ import * as path from 'path';
 import { ContentHandler } from './ContentHandler';
 import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilder';
 import { CakeOptions } from './model/CakeOptions';
-import { Page, Section, SectionMeta } from './model/Content';
+import { Page, SectionMeta } from './model/Content';
 import { TemplateBuilder } from './TemplateBuilder';
 import { Util } from './Util';
 
@@ -38,12 +38,11 @@ export class Cake {
     return Util.PAGE;
   }
 
-  private writeHtml(html: string, outDir: string, filename: string) {
-    const htmlDir = `${this.options.outputFolder}/${outDir}`;
-    if (html.length) {
-      fs.mkdirSync(htmlDir, { recursive: true });
-      fs.writeFileSync(`${htmlDir}/${filename}.html`, html);
-    }
+  private writeHtml(html: string, parsedPath: path.ParsedPath) {
+    if (!html.length) return;
+    const htmlDir = `${this.options.outputFolder}/${parsedPath.dir}`;
+    fs.mkdirSync(htmlDir, { recursive: true });
+    fs.writeFileSync(`${htmlDir}/${parsedPath.name}.html`, html);
   }
 
   /**
@@ -92,20 +91,22 @@ export class Cake {
 
       let html: string;
       if (parsedPath.name === Util.INDEX) {
-        const section: Section = { meta: sections[parsedPath.dir], content: content }
+        const section = {
+          meta: sections[parsedPath.dir],
+          content,
+        }
         html = this.templateBuilder.render(templatepath, section);
       } else {
-        // Precisa colocar o url
         const page: Page = {
           meta: {
-            url: 'teste',
+            url: `${parsedPath.dir}/${parsedPath.name}.html`,
           },
           content,
         };
         html = this.templateBuilder.render(templatepath, page);
       }
 
-      this.writeHtml(html, parsedPath.dir, parsedPath.name);
+      this.writeHtml(html, parsedPath);
     }
   }
 }
