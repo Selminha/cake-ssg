@@ -6,7 +6,7 @@ import { ContentHandler } from './ContentHandler';
 import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilder';
 import { JsonContentHandler } from './json/JsonContentHandler';
 import { CakeOptions } from './model/CakeOptions';
-import { Page, Section } from './model/Content';
+import { Page, Section, SectionMeta } from './model/Content';
 import { TemplateBuilder } from './TemplateBuilder';
 
 export class Cake {
@@ -56,10 +56,9 @@ export class Cake {
    * First iterates the contents folder in order to retrieve SectionMeta for every section.
    * Sections are dependant on each other so this first parse is necessary.
    */
-  // TODO: refatorar para usar SectionMeta ao invés de Section
-  private getSections(): Record<string, Section> {
+  private getSections(): Record<string, SectionMeta> {
     const contentFolders = glob.sync(`${this.options.contentFolder}/**/**`);
-    const sections: Record<string, Section> = {};
+    const sections: Record<string, SectionMeta> = {};
     for (const contentFolder of contentFolders) {
       if (contentFolder ==  this.options.contentFolder) {
         // ignore root content folder
@@ -68,12 +67,12 @@ export class Cake {
       const contentFolderName = contentFolder.substring(this.options.contentFolder.length + Cake.BAR.length, contentFolder.length);
       const parsedPath = path.parse(contentFolderName);
       if (!sections[parsedPath.dir]) {
-        sections[parsedPath.dir] = { meta: { sections: [], pages: [] } };
+        sections[parsedPath.dir] = { sections: [], pages: [] };
       }
       if (fs.lstatSync(contentFolder).isDirectory()) {
-        sections[parsedPath.dir].meta.sections.push(parsedPath.name);
+        sections[parsedPath.dir].sections.push(parsedPath.name);
       } else {
-        sections[parsedPath.dir].meta.pages.push(parsedPath.name);
+        sections[parsedPath.dir].pages.push(parsedPath.name);
       }
     }
 
@@ -99,8 +98,8 @@ export class Cake {
 
       let html: string;
       if (parsedPath.name === Cake.INDEX) {
-        sections[parsedPath.dir].content = content;
-        html = this.templateBuilder.render(templatepath, sections[parsedPath.dir]);
+        const section: Section = { meta: sections[parsedPath.dir], content: content }
+        html = this.templateBuilder.render(templatepath, section);
       } else {
         // Precisa colocar o meta
         const page: Page = { content: content };
