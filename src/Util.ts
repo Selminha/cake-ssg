@@ -30,7 +30,7 @@ export class Util {
    * Removes content folder from file path
    * @returns ParsedPath without the content folder
    */
-   public static getContentParsedPath(contentPath: string): path.ParsedPath {
+  public static getContentParsedPath(contentPath: string): path.ParsedPath {
     const contentFileName = contentPath.substring(Util.CONTENT_FOLDER.length + Util.BAR_LENGTH, contentPath.length);
     return path.parse(contentFileName);
   }
