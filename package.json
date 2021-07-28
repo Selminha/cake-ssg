@@ -4,7 +4,7 @@
   "description": "cake-ssg",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "eslint src/**/*.ts; tsc",
     "lint": "eslint src/**/*.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
