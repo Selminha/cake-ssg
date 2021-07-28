@@ -23,16 +23,16 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
     };
     this.options = { ...defaults, ...userOptions};
     wax.on(Handlebars);
-    wax.setLayoutPath(this.options.templateFolder);
+    wax.setLayoutPath(Util.TEMPLATE_FOLDER);
     this.registerBuiltInHelpers();
     this.compileAll();
     this.registerPartials();
   }
 
   private compileAll(): void {
-    const templatePaths = glob.sync(`${this.options.templateFolder}/**/*.hbs`);
+    const templatePaths = glob.sync(`${Util.TEMPLATE_FOLDER}/**/*.hbs`);
     for (const templatePath of templatePaths) {
-      const templateName = templatePath.substring(this.options.templateFolder.length + Util.BAR_LENGTH, templatePath.length - this.EXT_LENGTH);
+      const templateName = templatePath.substring(Util.TEMPLATE_FOLDER.length + Util.BAR_LENGTH, templatePath.length - this.EXT_LENGTH);
       const fileContents = fs.readFileSync(templatePath, { encoding: 'utf-8' });
       this.templates[templateName] = Handlebars.compile(fileContents) as (data: unknown) => string;
     }

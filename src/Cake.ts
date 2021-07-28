@@ -4,7 +4,7 @@ import * as path from 'path';
 import { ContentHandler } from './ContentHandler';
 import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilder';
 import { CakeOptions } from './model/CakeOptions';
-import { Page, SectionMeta } from './model/Content';
+import { SectionMeta } from './model/Content';
 import { TemplateBuilder } from './TemplateBuilder';
 import { Util } from './Util';
 
@@ -16,8 +16,6 @@ export class Cake {
 
   constructor(private userOptions?: CakeOptions) {
     const defaultOptions = {
-      templateFolder: 'templates',
-      contentFolder: 'content',
       outputFolder: 'dist',
     };
     this.options = { ...defaultOptions, ...userOptions};
@@ -50,14 +48,14 @@ export class Cake {
    * Sections are dependant on each other so this first parse is necessary.
    */
   private getSections(): Record<string, SectionMeta> {
-    const contentFolders = glob.sync(`${this.options.contentFolder}/**/**`);
+    const contentFolders = glob.sync(`${Util.CONTENT_FOLDER}/**/**`);
     const sections: Record<string, SectionMeta> = {};
     for (const contentFolder of contentFolders) {
-      if (contentFolder ==  this.options.contentFolder) {
+      if (contentFolder ==  Util.CONTENT_FOLDER) {
         // ignore root content folder
         continue;
       }
-      const contentFolderName = contentFolder.substring(this.options.contentFolder.length + Util.BAR_LENGTH, contentFolder.length);
+      const contentFolderName = contentFolder.substring(Util.CONTENT_FOLDER.length + Util.BAR_LENGTH, contentFolder.length);
       const parsedPath = path.parse(contentFolderName);
       if (!sections[parsedPath.dir]) {
         sections[parsedPath.dir] = { sections: [], pages: [] };
@@ -72,38 +70,19 @@ export class Cake {
     return sections;
   }
 
-  /**
-   * Removes content folder from file path
-   * @returns ParsedPath without the content folder
-   */
-  private getContentParsedPath(contentPath: string): path.ParsedPath {
-    const contentFileName = contentPath.substring(this.options.contentFolder.length + Util.BAR_LENGTH, contentPath.length);
-    return path.parse(contentFileName);
-  }
-
   bake(): void {
     const sections = this.getSections();
-    const contentPaths = glob.sync(`${this.options.contentFolder}/**/*.*`);
+    const contentPaths = glob.sync(`${Util.CONTENT_FOLDER}/**/*.*`);
     for (const contentPath of contentPaths) {
-      const parsedPath = this.getContentParsedPath(contentPath);
+      const parsedPath = Util.getContentParsedPath(contentPath);
       const content = this.contentHandler.getContent(contentPath);
       const templatepath = this.getTemplatePath(this.templateBuilder, parsedPath);
 
       let html: string;
       if (parsedPath.name === Util.INDEX) {
-        const section = {
-          meta: sections[parsedPath.dir],
-          content,
-        }
-        html = this.templateBuilder.render(templatepath, section);
+        html = this.templateBuilder.render(templatepath, Util.buildSection(sections[parsedPath.dir], content));
       } else {
-        const page: Page = {
-          meta: {
-            url: `${parsedPath.dir}/${parsedPath.name}.html`,
-          },
-          content,
-        };
-        html = this.templateBuilder.render(templatepath, page);
+        html = this.templateBuilder.render(templatepath, Util.buildPage(parsedPath, content));
       }
 
       this.writeHtml(html, parsedPath);
