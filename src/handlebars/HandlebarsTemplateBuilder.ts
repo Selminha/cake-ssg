@@ -5,10 +5,10 @@ import * as wax from 'wax-on';
 import { ContentHandler } from "../ContentHandler";
 import { CakeOptions, HandlebarsOptions } from "../model/CakeOptions";
 import { TemplateBuilder, Templates } from "../TemplateBuilder";
+import { Util } from "../Util";
 import { HandlebarsHelpers } from "./HandlebarsHelpers";
 
 export class HandlebarsTemplateBuilder extends TemplateBuilder {
-  private readonly BAR_LENGTH = '/'.length;
   private readonly EXT_LENGTH = '.hbs'.length;
 
   private templates: Templates = {};
@@ -32,7 +32,7 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
   private compileAll(): void {
     const templatePaths = glob.sync(`${this.options.templateFolder}/**/*.hbs`);
     for (const templatePath of templatePaths) {
-      const templateName = templatePath.substring(this.options.templateFolder.length + this.BAR_LENGTH, templatePath.length - this.EXT_LENGTH);
+      const templateName = templatePath.substring(this.options.templateFolder.length + Util.BAR_LENGTH, templatePath.length - this.EXT_LENGTH);
       const fileContents = fs.readFileSync(templatePath, { encoding: 'utf-8' });
       this.templates[templateName] = Handlebars.compile(fileContents) as (data: unknown) => string;
     }

@@ -30,6 +30,7 @@
     "no-unneeded-ternary": 2,
     "no-whitespace-before-property": 2,
     "one-var-declaration-per-line": 2,
+    "prefer-template": 1,
     "semi": [1, "always", {"omitLastInOneLineBlock": true}],
     "semi-spacing": 1,
     "semi-style": 1,

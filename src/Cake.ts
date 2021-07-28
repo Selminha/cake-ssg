@@ -6,14 +6,11 @@ import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilde
 import { CakeOptions } from './model/CakeOptions';
 import { Page, Section, SectionMeta } from './model/Content';
 import { TemplateBuilder } from './TemplateBuilder';
+import { Util } from './Util';
 
 export class Cake {
 
   private options: CakeOptions;
-  private static readonly BAR = '/';
-  private static readonly PAGE = 'page';
-  private static readonly INDEX = 'index';
-
   private templateBuilder: TemplateBuilder;
   private contentHandler: ContentHandler;
 
@@ -30,22 +27,22 @@ export class Cake {
   }
 
   private getTemplatePath(templateBuilder: TemplateBuilder, parsedPath: path.ParsedPath): string {
-    let templatepath: string = parsedPath.dir + Cake.BAR + parsedPath.name;
+    let templatepath = `${parsedPath.dir}/${parsedPath.name}`;
     if (templateBuilder.exists(templatepath)) {
       return templatepath;
     }
-    templatepath = parsedPath.dir + Cake.BAR + Cake.PAGE;
+    templatepath = `${parsedPath.dir}/${Util.PAGE}`;
     if (templateBuilder.exists(templatepath)) {
       return templatepath;
     }
-    return Cake.PAGE;
+    return Util.PAGE;
   }
 
   private writeHtml(html: string, outDir: string, filename: string) {
-    const htmlDir = this.options.outputFolder + Cake.BAR + outDir;
+    const htmlDir = `${this.options.outputFolder}/${outDir}`;
     if (html.length) {
       fs.mkdirSync(htmlDir, { recursive: true });
-      fs.writeFileSync(htmlDir + Cake.BAR + filename + '.html', html);
+      fs.writeFileSync(`${htmlDir}/${filename}.html`, html);
     }
   }
 
@@ -61,7 +58,7 @@ export class Cake {
         // ignore root content folder
         continue;
       }
-      const contentFolderName = contentFolder.substring(this.options.contentFolder.length + Cake.BAR.length, contentFolder.length);
+      const contentFolderName = contentFolder.substring(this.options.contentFolder.length + Util.BAR_LENGTH, contentFolder.length);
       const parsedPath = path.parse(contentFolderName);
       if (!sections[parsedPath.dir]) {
         sections[parsedPath.dir] = { sections: [], pages: [] };
@@ -81,7 +78,7 @@ export class Cake {
    * @returns ParsedPath without the content folder
    */
   private getContentParsedPath(contentPath: string): path.ParsedPath {
-    const contentFileName = contentPath.substring(this.options.contentFolder.length + Cake.BAR.length, contentPath.length);
+    const contentFileName = contentPath.substring(this.options.contentFolder.length + Util.BAR_LENGTH, contentPath.length);
     return path.parse(contentFileName);
   }
 
@@ -94,7 +91,7 @@ export class Cake {
       const templatepath = this.getTemplatePath(this.templateBuilder, parsedPath);
 
       let html: string;
-      if (parsedPath.name === Cake.INDEX) {
+      if (parsedPath.name === Util.INDEX) {
         const section: Section = { meta: sections[parsedPath.dir], content: content }
         html = this.templateBuilder.render(templatepath, section);
       } else {
