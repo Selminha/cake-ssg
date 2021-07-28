@@ -98,8 +98,13 @@ export class Cake {
         const section: Section = { meta: sections[parsedPath.dir], content: content }
         html = this.templateBuilder.render(templatepath, section);
       } else {
-        // Precisa colocar o meta
-        const page: Page = { content: content };
+        // Precisa colocar o url
+        const page: Page = {
+          meta: {
+            url: 'teste',
+          },
+          content,
+        };
         html = this.templateBuilder.render(templatepath, page);
       }
 

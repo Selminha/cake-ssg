@@ -49,8 +49,7 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
   }
 
   private registerBuiltInHelpers(): void {
-    const helpers = new HandlebarsHelpers(this.contentHandler);
-    Handlebars.registerHelper('useContent', helpers.useContent);
+    Handlebars.registerHelper('useContent', HandlebarsHelpers.useContent);
   }
 
   exists(templateName: string): boolean {

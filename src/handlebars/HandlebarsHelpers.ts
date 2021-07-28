@@ -3,13 +3,9 @@ import { ContentHandler } from "../ContentHandler";
 
 export class HandlebarsHelpers {
 
-  constructor(private contentHandler: ContentHandler) {
-  }
-
-  public useContent(value: string, options: HelperOptions): string {
-    const contentHandler = new ContentHandler();
-    // TODO mudar para o this.contentHandler
-    const content = contentHandler.getContent(value);
+  public static useContent(this:void, value: string, options: HelperOptions): string {
+    const content = new ContentHandler().getContent(value);
+    // TODO: passar um objeto do tipo Page, não só o content; e também passar o parent
     return options.fn({ content });
   }
 }
