@@ -1,12 +1,11 @@
 import * as fs from "fs";
 import { glob } from "glob";
-import Handlebars, { HelperOptions } from "handlebars";
+import Handlebars from "handlebars";
+import * as wax from 'wax-on';
+import { ContentHandler } from "../ContentHandler";
 import { CakeOptions, HandlebarsOptions } from "../model/CakeOptions";
 import { TemplateBuilder, Templates } from "../TemplateBuilder";
-import { ContentHandler } from "../ContentHandler";
 import { HandlebarsHelpers } from "./HandlebarsHelpers";
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires */
-const wax = require('wax-on');
 
 export class HandlebarsTemplateBuilder extends TemplateBuilder {
   private readonly BAR_LENGTH = '/'.length;
@@ -23,9 +22,7 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
       },
     };
     this.options = { ...defaults, ...userOptions};
-    /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
     wax.on(Handlebars);
-    /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
     wax.setLayoutPath(this.options.templateFolder);
     this.registerBuiltInHelpers();
     this.compileAll();
