@@ -1,10 +1,8 @@
 import * as fs from 'fs';
 import { glob } from 'glob';
-import { Template } from 'handlebars';
 import * as path from 'path';
 import { ContentHandler } from './ContentHandler';
 import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilder';
-import { JsonContentHandler } from './json/JsonContentHandler';
 import { CakeOptions } from './model/CakeOptions';
 import { Page, Section, SectionMeta } from './model/Content';
 import { TemplateBuilder } from './TemplateBuilder';
@@ -24,11 +22,10 @@ export class Cake {
       templateFolder: 'templates',
       contentFolder: 'content',
       outputFolder: 'dist',
-      contentFileType: 'json',
     };
     this.options = { ...defaultOptions, ...userOptions};
 
-    this.contentHandler = new JsonContentHandler();
+    this.contentHandler = new ContentHandler();
     this.templateBuilder = new HandlebarsTemplateBuilder(this.options, this.contentHandler);
   }
 

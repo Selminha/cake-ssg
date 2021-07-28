@@ -2,9 +2,7 @@ import * as fs from "fs";
 import { glob } from "glob";
 import Handlebars, { HelperOptions } from "handlebars";
 import { CakeOptions, HandlebarsOptions } from "../model/CakeOptions";
-import { JsonContentHandler } from "../json/JsonContentHandler";
 import { TemplateBuilder, Templates } from "../TemplateBuilder";
-import { Page } from "../model/Content";
 import { ContentHandler } from "../ContentHandler";
 import { HandlebarsHelpers } from "./HandlebarsHelpers";
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires */

@@ -7,7 +7,9 @@ export class HandlebarsHelpers {
   }
 
   public useContent(value: string, options: HelperOptions): string {
-    const content = this.contentHandler.getContent(value);
+    const contentHandler = new ContentHandler();
+    // TODO mudar para o this.contentHandler
+    const content = contentHandler.getContent(value);
     return options.fn({ content });
   }
 }
