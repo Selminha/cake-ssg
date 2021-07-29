@@ -6,10 +6,10 @@ export class Util {
   public static readonly BAR_LENGTH = '/'.length;
   public static readonly PAGE = 'page';
   public static readonly INDEX = 'index';
-  public static readonly HOME = 'home';
 
   public static readonly CONTENT_FOLDER = 'content';
   public static readonly TEMPLATE_FOLDER = 'templates';
+  public static readonly DEFAULT_FOLDER = 'default'
 
   public static buildSection(meta: SectionMeta, content: unknown): Section {
     return {

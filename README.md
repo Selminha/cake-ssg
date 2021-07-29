@@ -10,9 +10,6 @@ Ordem para buscar templates de page:
   3 - diretório raiz dos templates, nome do template = "page"
 
 Mesma ordem para buscar index (section), só que nome do template default é "index".
-Homepage tem tratamento especial:
-  - O index em que estar na raiz dos arquivos de conteúdos.
-  - O template tem que estar na raiz e se chamar "home"
 
 Regra para geração de index.html para section:
   Só irá gerar se o arquivo index existir na section(diretório) nas pastas de conteúdo
@@ -31,6 +28,7 @@ Conteúdo passado para uma section:
 folders default:
   CONTENT_FOLDER = 'content';
   TEMPLATE_FOLDER = 'templates';
+  DEFAULT_FOLDER = 'default';
   partialsFolder: 'partials' <!-- específico do handlebars -->
 
 Detalhar as opções que podem ser passadas para o cake no CakeOptions

@@ -30,14 +30,6 @@ export class Cake {
   }
 
   private getTemplatePath(templateBuilder: TemplateBuilder, parsedPath: path.ParsedPath): string {
-    // Homepage has an special treatment and an special default template name
-    if ((parsedPath.name === Util.INDEX) && (parsedPath.dir.length === 0)) {
-      if (!templateBuilder.exists(Util.HOME)) {
-        console.log('Homepage template not found. Did you create a home.hbs template?');
-      }
-      return Util.HOME;
-    }
-
     let templatepath = `${parsedPath.dir}/${parsedPath.name}`;
     if (templateBuilder.exists(templatepath)) {
       return templatepath;
@@ -48,7 +40,7 @@ export class Cake {
     if (templateBuilder.exists(templatepath)) {
       return templatepath;
     }
-    return defaultTemplateName;
+    return `${Util.DEFAULT_FOLDER}/${defaultTemplateName}`;
   }
 
   private writeHtml(html: string, parsedPath: path.ParsedPath) {
