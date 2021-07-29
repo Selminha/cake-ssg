@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import { glob } from 'glob';
 import * as path from 'path';
+import merge from 'ts-deepmerge';
 import { ContentHandler } from './ContentHandler';
 import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilder';
 import { CakeOptions } from './model/CakeOptions';
@@ -18,7 +19,11 @@ export class Cake {
     const defaultOptions = {
       outputFolder: 'dist',
     };
-    this.options = { ...defaultOptions, ...userOptions};
+    if (userOptions === undefined) {
+      this.options = defaultOptions;
+    } else {
+      this.options = merge(defaultOptions, userOptions);
+    }
 
     this.contentHandler = new ContentHandler();
     this.templateBuilder = new HandlebarsTemplateBuilder(this.options, this.contentHandler);

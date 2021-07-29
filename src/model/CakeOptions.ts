@@ -5,4 +5,5 @@ export interface CakeOptions {
 
 export interface HandlebarsOptions {
   partialsFolder: string;
+  helpers?: Record<string, Handlebars.HelperDelegate>;
 }

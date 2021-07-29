@@ -17,6 +17,7 @@
     "@types/wax-on": "^1.2.0",
     "glob": "^7.1.7",
     "handlebars": "^4.7.7",
+    "ts-deepmerge": "^1.0.8",
     "wax-on": "^1.2.2"
   },
   "devDependencies": {

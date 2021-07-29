@@ -2,6 +2,7 @@ import * as fs from "fs";
 import { glob } from "glob";
 import Handlebars from "handlebars";
 import * as wax from 'wax-on';
+import merge from 'ts-deepmerge';
 import { ContentHandler } from "../ContentHandler";
 import { CakeOptions, HandlebarsOptions } from "../model/CakeOptions";
 import { TemplateBuilder, Templates } from "../TemplateBuilder";
@@ -21,10 +22,11 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
         partialsFolder: 'partials',
       },
     };
-    this.options = { ...defaults, ...userOptions};
+    this.options = merge(defaults, userOptions);
     wax.on(Handlebars);
     wax.setLayoutPath(Util.TEMPLATE_FOLDER);
     this.registerBuiltInHelpers();
+    this.registerUserHelpers();
     this.compileAll();
     this.registerPartials();
   }
@@ -50,6 +52,16 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
 
   private registerBuiltInHelpers(): void {
     Handlebars.registerHelper('useContent', HandlebarsHelpers.useContent);
+  }
+
+  private registerUserHelpers(): void {
+    if (this.options.handlebars?.helpers === undefined) {
+      return;
+    }
+
+    for (const helperKey in this.options.handlebars.helpers) {
+      Handlebars.registerHelper(helperKey, this.options.handlebars.helpers[helperKey]);
+    }
   }
 
   exists(templateName: string): boolean {
