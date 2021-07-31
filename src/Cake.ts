@@ -104,7 +104,7 @@ export class Cake {
         if (parsedPath.name === Util.INDEX) {
           // hml = this.templateBuilder.render(templatepath, Util.buildSectionContext(sections[parsedPath.dir], content));
           console.log(page.contentPath);
-          html = '1';
+          html = this.templateBuilder.render(templatepath, Util.buildPageContext(parsedPath, content));
         } else {
           html = this.templateBuilder.render(templatepath, Util.buildPageContext(parsedPath, content));
         }
