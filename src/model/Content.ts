@@ -2,19 +2,20 @@ export interface Content {
   content?: unknown;
 }
 
-export interface SectionMeta {
-  sections: string[];
-  pages: string[];
+export interface SectionMeta extends Meta {
+  sections: SectionMeta[];
+  pages: Meta[];
 }
 
 export interface Section extends Content {
   meta: SectionMeta;
 }
 
-export interface PageMeta {
+export interface Meta {
+  name: string;
   url: string;
 }
 
 export interface Page extends Content {
-  meta: PageMeta;
+  meta: Meta;
 }

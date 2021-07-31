@@ -1,11 +1,13 @@
 import * as fs from 'fs';
 import { glob } from 'glob';
+import { url } from 'inspector';
 import * as path from 'path';
 import merge from 'ts-deepmerge';
 import { ContentHandler } from './ContentHandler';
 import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilder';
 import { CakeOptions } from './model/CakeOptions';
 import { SectionMeta } from './model/Content';
+import { GlobalData, Item, Section } from './model/GlobalData';
 import { TemplateBuilder } from './TemplateBuilder';
 import { Util } from './Util';
 
@@ -50,49 +52,78 @@ export class Cake {
     fs.writeFileSync(`${htmlDir}/${parsedPath.name}.html`, html);
   }
 
-  /**
-   * First iterates the contents folder in order to retrieve SectionMeta for every section.
-   * Sections are dependant on each other so this first parse is necessary.
-   */
-  private getSections(): Record<string, SectionMeta> {
-    const contentFolders = glob.sync(`${Util.CONTENT_FOLDER}/**/**`);
-    const sections: Record<string, SectionMeta> = {};
-    for (const contentFolder of contentFolders) {
-      if (contentFolder ==  Util.CONTENT_FOLDER) {
-        // ignore root content folder
-        continue;
-      }
-      const contentFolderName = contentFolder.substring(Util.CONTENT_FOLDER.length + Util.BAR_LENGTH, contentFolder.length);
-      const parsedPath = path.parse(contentFolderName);
-      if (!sections[parsedPath.dir]) {
-        sections[parsedPath.dir] = { sections: [], pages: [] };
-      }
-      if (fs.lstatSync(contentFolder).isDirectory()) {
-        sections[parsedPath.dir].sections.push(parsedPath.name);
+  private getSectionData(contentPath: string): Section {
+    console.log(contentPath);
+    const itemsFolder = fs.readdirSync(contentPath);
+    const section: Section = {
+      name: path.basename(contentPath),
+      url: contentPath,
+      contentPath: contentPath,
+    };
+
+    for (const itemFolder of itemsFolder) {
+      const itemPath = contentPath.length > 0 ? `${contentPath}/${itemFolder}` : itemFolder;
+      if (fs.lstatSync(`${contentPath}/${itemFolder}`).isDirectory()) {
+        if (!section.sections) {
+          section.sections = [];
+        }
+        section.sections.push(this.getSectionData(itemPath));
       } else {
-        sections[parsedPath.dir].pages.push(parsedPath.name);
+        if (!section.pages) {
+          section.pages = [];
+        }
+        const parsedPath = path.parse(itemPath);
+        const itemPage: Item = {
+          name: parsedPath.name,
+          url: parsedPath.dir.length> 0 ? `/${parsedPath.dir}/${parsedPath.name}.html` : `/${parsedPath.name}.html`,
+          contentPath: itemPath,
+        };
+        section.pages.push(itemPage);
       }
     }
 
-    return sections;
+    return section;
+  }
+
+  private getGlobalData(): GlobalData {
+    const globalData: GlobalData = {
+      rootSection: this.getSectionData(Util.CONTENT_FOLDER),
+    };
+
+    return globalData;
+  }
+
+  private renderContent(section: Section): void {
+    if (section.pages) {
+      for (const page of section.pages) {
+        const parsedPath = Util.getContentParsedPath(page.contentPath);
+        const content = this.contentHandler.getContent(page.contentPath);
+        const templatepath = this.getTemplatePath(this.templateBuilder, parsedPath);
+
+        let html: string;
+        if (parsedPath.name === Util.INDEX) {
+          // hml = this.templateBuilder.render(templatepath, Util.buildSectionContext(sections[parsedPath.dir], content));
+          console.log(page.contentPath);
+          html = '1';
+        } else {
+          html = this.templateBuilder.render(templatepath, Util.buildPageContext(parsedPath, content));
+        }
+
+        this.writeHtml(html, parsedPath);
+      }
+    }
+
+    if (section.sections) {
+      for (const childSection of section.sections) {
+        this.renderContent(childSection);
+      }
+    }
   }
 
   bake(): void {
-    const sections = this.getSections();
-    const contentPaths = glob.sync(`${Util.CONTENT_FOLDER}/**/*.*`);
-    for (const contentPath of contentPaths) {
-      const parsedPath = Util.getContentParsedPath(contentPath);
-      const content = this.contentHandler.getContent(contentPath);
-      const templatepath = this.getTemplatePath(this.templateBuilder, parsedPath);
+    const globalData = this.getGlobalData();
+    console.log(JSON.stringify(globalData));
 
-      let html: string;
-      if (parsedPath.name === Util.INDEX) {
-        html = this.templateBuilder.render(templatepath, Util.buildSection(sections[parsedPath.dir], content));
-      } else {
-        html = this.templateBuilder.render(templatepath, Util.buildPage(parsedPath, content));
-      }
-
-      this.writeHtml(html, parsedPath);
-    }
+    this.renderContent(globalData.rootSection);
   }
 }

@@ -11,17 +11,18 @@ export class Util {
   public static readonly TEMPLATE_FOLDER = 'templates';
   public static readonly DEFAULT_FOLDER = 'default'
 
-  public static buildSection(meta: SectionMeta, content: unknown): Section {
+  public static buildSectionContext(meta: SectionMeta, content: unknown): Section {
     return {
       meta: meta,
       content,
     };
   }
 
-  public static buildPage(parsedPath: path.ParsedPath, content: unknown): Page {
+  public static buildPageContext(parsedPath: path.ParsedPath, content: unknown): Page {
     return {
       meta: {
         url: `/${parsedPath.dir}/${parsedPath.name}.html`,
+        name: parsedPath.name,
       },
       content,
     };
