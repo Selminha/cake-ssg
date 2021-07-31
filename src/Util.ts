@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Page, Section, SectionMeta } from "./model/Content";
+//import { PageContext, Section, SectionMeta } from "./model/Content";
 
 export class Util {
 
@@ -11,14 +11,14 @@ export class Util {
   public static readonly TEMPLATE_FOLDER = 'templates';
   public static readonly DEFAULT_FOLDER = 'default'
 
-  public static buildSectionContext(meta: SectionMeta, content: unknown): Section {
+  /* public static buildSectionContext(meta: SectionMeta, content: unknown): Section {
     return {
       meta: meta,
       content,
     };
-  }
+  } */
 
-  public static buildPageContext(parsedPath: path.ParsedPath, content: unknown): Page {
+  /* public static buildPageContext(parsedPath: path.ParsedPath, content: unknown): Page {
     return {
       meta: {
         url: `/${parsedPath.dir}/${parsedPath.name}.html`,
@@ -26,7 +26,7 @@ export class Util {
       },
       content,
     };
-  }
+  } */
 
   /**
    * Removes content folder from file path

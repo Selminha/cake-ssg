@@ -1,13 +1,10 @@
 import * as fs from 'fs';
-import { glob } from 'glob';
-import { url } from 'inspector';
 import * as path from 'path';
 import merge from 'ts-deepmerge';
 import { ContentHandler } from './ContentHandler';
 import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilder';
 import { CakeOptions } from './model/CakeOptions';
-import { SectionMeta } from './model/Content';
-import { GlobalData, Item, Section } from './model/GlobalData';
+import { GlobalData, Meta, PageContext, SectionContext, SectionMeta } from './model/Content';
 import { TemplateBuilder } from './TemplateBuilder';
 import { Util } from './Util';
 
@@ -52,10 +49,10 @@ export class Cake {
     fs.writeFileSync(`${htmlDir}/${parsedPath.name}.html`, html);
   }
 
-  private getSectionData(contentPath: string): Section {
+  private getSectionData(contentPath: string): SectionMeta {
     console.log(contentPath);
     const itemsFolder = fs.readdirSync(contentPath);
-    const section: Section = {
+    const section: SectionMeta = {
       name: path.basename(contentPath),
       url: contentPath,
       contentPath: contentPath,
@@ -73,7 +70,7 @@ export class Cake {
           section.pages = [];
         }
         const parsedPath = path.parse(itemPath);
-        const itemPage: Item = {
+        const itemPage: Meta = {
           name: parsedPath.name,
           url: parsedPath.dir.length> 0 ? `/${parsedPath.dir}/${parsedPath.name}.html` : `/${parsedPath.name}.html`,
           contentPath: itemPath,
@@ -93,7 +90,7 @@ export class Cake {
     return globalData;
   }
 
-  private renderContent(section: Section): void {
+  private renderContent(section: SectionMeta, globalData: GlobalData): void {
     if (section.pages) {
       for (const page of section.pages) {
         const parsedPath = Util.getContentParsedPath(page.contentPath);
@@ -102,11 +99,19 @@ export class Cake {
 
         let html: string;
         if (parsedPath.name === Util.INDEX) {
-          // hml = this.templateBuilder.render(templatepath, Util.buildSectionContext(sections[parsedPath.dir], content));
-          console.log(page.contentPath);
-          html = this.templateBuilder.render(templatepath, Util.buildPageContext(parsedPath, content));
+          const sectionContext: SectionContext = {
+            rootSection: globalData.rootSection,
+            content: content,
+            meta: section,
+          };
+          html = this.templateBuilder.render(templatepath, sectionContext);
         } else {
-          html = this.templateBuilder.render(templatepath, Util.buildPageContext(parsedPath, content));
+          const pageContext: PageContext = {
+            rootSection: globalData.rootSection,
+            meta: page,
+            content: content,
+          };
+          html = this.templateBuilder.render(templatepath, pageContext);
         }
 
         this.writeHtml(html, parsedPath);
@@ -115,15 +120,13 @@ export class Cake {
 
     if (section.sections) {
       for (const childSection of section.sections) {
-        this.renderContent(childSection);
+        this.renderContent(childSection, globalData);
       }
     }
   }
 
   bake(): void {
     const globalData = this.getGlobalData();
-    console.log(JSON.stringify(globalData));
-
-    this.renderContent(globalData.rootSection);
+    this.renderContent(globalData.rootSection, globalData);
   }
 }

@@ -36,7 +36,6 @@ export class HandlebarsTemplateBuilder extends TemplateBuilder {
     for (const templatePath of templatePaths) {
       const templateName = templatePath.substring(Util.TEMPLATE_FOLDER.length + Util.BAR_LENGTH, templatePath.length - this.EXT_LENGTH);
       const fileContents = fs.readFileSync(templatePath, { encoding: 'utf-8' });
-      console.log(templateName);
       this.templates[templateName] = Handlebars.compile(fileContents) as (data: unknown) => string;
     }
   }
