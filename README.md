@@ -1,5 +1,7 @@
 # **cake-ssg (Cake Static Site Generator)**
 
+## Concepts
+
 ## Content file structure
 ----
 
