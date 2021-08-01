@@ -9,8 +9,15 @@ Cake-ssg is a node static site generator. It merges your content files with your
 ## Installation instructions
 * Install the prerequisites (see above)
 * Install cake-ssg:
-  To install cake-ssg globally run:
-  ```npm install 
+  * To install the latest version on npm globally, run:
+    ```
+    npm install -g cake-ssg
+    ```
+  * To install the latest version on npm locally and save it in your package's package.json file, run:
+    ```
+    npm install cake-ssg
+    ```
+  
 ## Content file structure
 
 
