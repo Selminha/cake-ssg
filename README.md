@@ -1,9 +1,18 @@
 # **cake-ssg (Cake Static Site Generator)**
 
-## Concepts
+## Quick Start
+Cake-ssg is a node static site generator. It merges your content files with your site templates to generate the html of your site.
 
+## Prerequisites
+* last version of node.js, you can download from the [official page](https://nodejs.org/en/).
+
+## Installation instructions
+* Install the prerequisites (see above)
+* Install cake-ssg:
+  To install cake-ssg globally run:
+  ```npm install 
 ## Content file structure
-----
+
 
 Para não esquecer:
 Ordem para buscar templates de page:
