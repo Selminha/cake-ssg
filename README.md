@@ -34,8 +34,8 @@ Conteúdo passado para uma section:
     name, 
     url,
     contentPath,
-    sections: [], <!-- lista de section filhas -->
-    pages: [] <!-- lista de pages filhas --> 
+    sections: [], <!-- lista de meta section filhas -->
+    pages: [] <!-- lista de meta pages filhas --> 
   }, 
   content: {
     <!-- conteúdo do arquivo de index da section -->
