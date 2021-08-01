@@ -4,7 +4,7 @@
 Cake-ssg is a node static site generator. It merges your content files with your site templates to generate the html of your site.
 
 ## Prerequisites
-* last version of node.js, you can download from the [official page](https://nodejs.org/en/).
+* latest version of node.js, you can download it from [official page](https://nodejs.org/en/).
 
 ## Installation instructions
 * Install the prerequisites (see above)
