@@ -4,7 +4,7 @@ import merge from 'ts-deepmerge';
 import { ContentHandler } from './ContentHandler';
 import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilder';
 import { CakeOptions } from './model/CakeOptions';
-import { GlobalData, Meta, PageContext, SectionContext, SectionMeta } from './model/Content';
+import { GlobalData, Meta, SectionMeta } from './model/Content';
 import { TemplateBuilder } from './TemplateBuilder';
 import { Util } from './Util';
 
@@ -50,7 +50,6 @@ export class Cake {
   }
 
   private getSectionData(contentPath: string): SectionMeta {
-    console.log(contentPath);
     const itemsFolder = fs.readdirSync(contentPath);
     const section: SectionMeta = {
       name: path.basename(contentPath),
@@ -60,7 +59,7 @@ export class Cake {
 
     for (const itemFolder of itemsFolder) {
       const itemPath = contentPath.length > 0 ? `${contentPath}/${itemFolder}` : itemFolder;
-      if (fs.lstatSync(`${contentPath}/${itemFolder}`).isDirectory()) {
+      if (Util.isSection(`${contentPath}/${itemFolder}`)) {
         if (!section.sections) {
           section.sections = [];
         }
@@ -99,19 +98,9 @@ export class Cake {
 
         let html: string;
         if (parsedPath.name === Util.INDEX) {
-          const sectionContext: SectionContext = {
-            rootSection: globalData.rootSection,
-            content: content,
-            meta: section,
-          };
-          html = this.templateBuilder.render(templatepath, sectionContext);
+          html = this.templateBuilder.render(templatepath, Util.buildSectionContext(globalData, content, section));
         } else {
-          const pageContext: PageContext = {
-            rootSection: globalData.rootSection,
-            meta: page,
-            content: content,
-          };
-          html = this.templateBuilder.render(templatepath, pageContext);
+          html = this.templateBuilder.render(templatepath, Util.buildPageContext(globalData, page, content));
         }
 
         this.writeHtml(html, parsedPath);

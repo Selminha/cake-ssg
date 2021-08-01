@@ -1,13 +1,26 @@
 import { HelperOptions } from "handlebars";
 import { ContentHandler } from "../ContentHandler";
 import { Util } from "../Util";
+import { GlobalData, Meta, SectionMeta } from '../model/Content';
 
+interface Data {
+  root: GlobalData
+}
 export class HandlebarsHelpers {
 
   public static useContent(this: void, contentPath: string, options: HelperOptions): string {
-    console.log(JSON.stringify(options));
-    const parsedPath = Util.getContentParsedPath(contentPath);
+    const data = options.data as Data;
+    const meta = Util.getMetaByContentPath(data.root.rootSection, contentPath);
+    if (!meta) {
+      console.log(`useContent - Content Meta of ${contentPath} not found`);
+    }
+
+    if (Util.isSection(contentPath)) {
+      const content = new ContentHandler().getContent(`${contentPath}/${Util.INDEX}.json`);
+      return options.fn(Util.buildSectionContext(data.root, content, meta as SectionMeta));
+    }
+
     const content = new ContentHandler().getContent(contentPath);
-    return options.fn(''/* Util.buildPageContext(parsedPath, content) */);
+    return options.fn(Util.buildPageContext(data.root, meta as Meta, content));
   }
 }
