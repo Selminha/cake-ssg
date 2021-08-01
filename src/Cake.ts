@@ -53,7 +53,7 @@ export class Cake {
     const itemsFolder = fs.readdirSync(contentPath);
     const section: SectionMeta = {
       name: path.basename(contentPath),
-      url: contentPath,
+      url: contentPath.substring(Util.CONTENT_FOLDER.length + Util.BAR_LENGTH, contentPath.length),
       contentPath: contentPath,
     };
 
@@ -68,10 +68,10 @@ export class Cake {
         if (!section.pages) {
           section.pages = [];
         }
-        const parsedPath = path.parse(itemPath);
+        const parsedPath = Util.getContentParsedPath(itemPath);
         const itemPage: Meta = {
           name: parsedPath.name,
-          url: parsedPath.dir.length> 0 ? `/${parsedPath.dir}/${parsedPath.name}.html` : `/${parsedPath.name}.html`,
+          url: parsedPath.dir.length> 0 ? `${parsedPath.dir}/${parsedPath.name}.html` : `${parsedPath.name}.html`,
           contentPath: itemPath,
         };
         section.pages.push(itemPage);

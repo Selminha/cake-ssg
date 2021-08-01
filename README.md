@@ -46,46 +46,46 @@ exemplo de globaldata:
 {
   "rootSection":{
     "name":"content",
-    "url":"content",
+    "url":"",
     "contentPath":"content",
     "sections":[
       {
         "name":"armas",
-        "url":"content/armas",
+        "url":"armas",
         "contentPath":"content/armas",
         "sections":[
           {
             "name":"ingredientes",
-            "url":"content/armas/ingredientes",
+            "url":"armas/ingredientes",
             "contentPath":"content/armas/ingredientes"
           }
         ]
       },
       {
         "name":"materiais",
-        "url":"content/materiais",
+        "url":"materiais",
         "contentPath":"content/materiais",
         "pages":[
           {
             "name":"index",
-            "url":"/content/materiais/index.html",
+            "url":"materiais/index.html",
             "contentPath":"content/materiais/index.json"
           }
         ],
         "sections":[
           {
             "name":"ingredientes",
-            "url":"content/materiais/ingredientes",
+            "url":"materiais/ingredientes",
             "contentPath":"content/materiais/ingredientes",
             "pages":[
               {
                 "name":"açúcar",
-                "url":"/content/materiais/ingredientes/açúcar.html",
+                "url":"materiais/ingredientes/açúcar.html",
                 "contentPath":"content/materiais/ingredientes/açúcar.json"
               },
               {
                 "name":"flor-doce",
-                "url":"/content/materiais/ingredientes/flor-doce.html",
+                "url":"materiais/ingredientes/flor-doce.html",
                 "contentPath":"content/materiais/ingredientes/flor-doce.json"
               }
             ]
@@ -96,7 +96,7 @@ exemplo de globaldata:
     "pages":[
         {
           "name":"index",
-          "url":"/content/index.html",
+          "url":"index.html",
           "contentPath":"content/index.json"
         }
     ]
