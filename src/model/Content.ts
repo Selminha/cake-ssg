@@ -1,5 +1,5 @@
 export interface PageContext extends Content, GlobalData {
-  meta: Meta;
+  meta: PageMeta;
 }
 
 export interface SectionContext extends Content, GlobalData {

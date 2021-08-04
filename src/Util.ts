@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { GlobalData, Meta, PageContext, SectionContext, SectionMeta } from './model/Content';
+import { GlobalData, Meta, PageContext, PageMeta, SectionContext, SectionMeta } from './model/Content';
 
 export class Util {
 
@@ -46,7 +46,7 @@ export class Util {
     return returnValue;
   }
 
-  public static buildSectionContext(globalData: GlobalData, content: unknown, meta: SectionMeta): SectionContext {
+  public static buildSectionContext(globalData: GlobalData, meta: SectionMeta, content: unknown): SectionContext {
     return {
       rootSection: globalData.rootSection,
       content: content,
@@ -54,7 +54,7 @@ export class Util {
     };
   }
 
-  public static buildPageContext(globalData: GlobalData, meta: Meta, content: unknown): PageContext {
+  public static buildPageContext(globalData: GlobalData, meta: PageMeta, content: unknown): PageContext {
     return {
       rootSection: globalData.rootSection,
       meta: meta,

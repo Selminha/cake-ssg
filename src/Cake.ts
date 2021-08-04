@@ -94,33 +94,41 @@ export class Cake {
     return globalData;
   }
 
-  private renderContent(section: SectionMeta, globalData: GlobalData): void {
+  private renderContent(meta: PageMeta|SectionMeta, contentPath: string, globalData: GlobalData) {
+    const parsedPath = Util.getContentParsedPath(contentPath);
+    const content = this.contentHandler.getContent(contentPath);
+    const templatepath = this.getTemplatePath(this.templateBuilder, parsedPath);
+
+    let html: string;
+    if (parsedPath.name === Util.INDEX) {
+      html = this.templateBuilder.render(templatepath, Util.buildSectionContext(globalData, meta as SectionMeta, content));
+    } else {
+      html = this.templateBuilder.render(templatepath, Util.buildPageContext(globalData, meta as PageMeta, content));
+    }
+
+    this.writeHtml(html, parsedPath);
+  }
+
+  private renderContents(section: SectionMeta, globalData: GlobalData): void {
+    if (section.contentPath) {
+      this.renderContent(section, section.contentPath, globalData);
+    }
+
     if (section.pages) {
       for (const page of section.pages) {
-        const parsedPath = Util.getContentParsedPath(page.contentPath);
-        const content = this.contentHandler.getContent(page.contentPath);
-        const templatepath = this.getTemplatePath(this.templateBuilder, parsedPath);
-
-        let html: string;
-        if (parsedPath.name === Util.INDEX) {
-          html = this.templateBuilder.render(templatepath, Util.buildSectionContext(globalData, content, section));
-        } else {
-          html = this.templateBuilder.render(templatepath, Util.buildPageContext(globalData, page, content));
-        }
-
-        this.writeHtml(html, parsedPath);
+        this.renderContent(page, page.contentPath, globalData);
       }
     }
 
     if (section.sections) {
       for (const childSection of section.sections) {
-        this.renderContent(childSection, globalData);
+        this.renderContents(childSection, globalData);
       }
     }
   }
 
   bake(): void {
     const globalData = this.getGlobalData();
-    this.renderContent(globalData.rootSection, globalData);
+    this.renderContents(globalData.rootSection, globalData);
   }
 }
