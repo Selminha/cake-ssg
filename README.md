@@ -53,6 +53,7 @@ Conteúdo passado para uma section:
   meta: {
     name, 
     url,
+    sectionPath,
     contentPath,
     sections: [], <!-- lista de meta section filhas -->
     pages: [] <!-- lista de meta pages filhas --> 
