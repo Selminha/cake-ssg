@@ -13,12 +13,17 @@ export interface Content {
 export interface Meta {
   name: string;
   url: string;
+}
+
+export interface PageMeta extends Meta {
   contentPath: string;
 }
 
 export interface SectionMeta extends Meta {
+  sectionPath: string;
+  contentPath?: string;
   sections?: SectionMeta[];
-  pages?: Meta[];
+  pages?: PageMeta[];
 }
 
 export interface GlobalData {

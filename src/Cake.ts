@@ -4,7 +4,7 @@ import merge from 'ts-deepmerge';
 import { ContentHandler } from './ContentHandler';
 import { HandlebarsTemplateBuilder } from './handlebars/HandlebarsTemplateBuilder';
 import { CakeOptions } from './model/CakeOptions';
-import { GlobalData, Meta, SectionMeta } from './model/Content';
+import { GlobalData, PageMeta, SectionMeta } from './model/Content';
 import { TemplateBuilder } from './TemplateBuilder';
 import { Util } from './Util';
 
@@ -54,7 +54,7 @@ export class Cake {
     const section: SectionMeta = {
       name: path.basename(contentPath),
       url: contentPath.substring(Util.CONTENT_FOLDER.length + Util.BAR_LENGTH, contentPath.length),
-      contentPath: contentPath,
+      sectionPath: contentPath,
     };
 
     for (const itemFolder of itemsFolder) {
@@ -65,16 +65,21 @@ export class Cake {
         }
         section.sections.push(this.getSectionData(itemPath));
       } else {
-        if (!section.pages) {
-          section.pages = [];
-        }
         const parsedPath = Util.getContentParsedPath(itemPath);
-        const itemPage: Meta = {
-          name: parsedPath.name,
-          url: parsedPath.dir.length> 0 ? `${parsedPath.dir}/${parsedPath.name}.html` : `${parsedPath.name}.html`,
-          contentPath: itemPath,
-        };
-        section.pages.push(itemPage);
+        // Content of the section
+        if (parsedPath.name === Util.INDEX) {
+          section.contentPath = itemPath;
+        } else {
+          if (!section.pages) {
+            section.pages = [];
+          }
+          const itemPage: PageMeta = {
+            name: parsedPath.name,
+            url: parsedPath.dir.length> 0 ? `${parsedPath.dir}/${parsedPath.name}.html` : `${parsedPath.name}.html`,
+            contentPath: itemPath,
+          };
+          section.pages.push(itemPage);
+        }
       }
     }
 
