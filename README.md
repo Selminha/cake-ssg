@@ -64,63 +64,30 @@ Conteúdo passado para uma section:
 
 exemplo de globaldata:
 {
-  "rootSection":{
-    "name":"content",
-    "url":"",
-    "contentPath":"content",
-    "sections":[
-      {
-        "name":"armas",
-        "url":"armas",
-        "contentPath":"content/armas",
-        "sections":[
-          {
-            "name":"ingredientes",
-            "url":"armas/ingredientes",
-            "contentPath":"content/armas/ingredientes"
-          }
-        ]
-      },
-      {
-        "name":"materiais",
-        "url":"materiais",
-        "contentPath":"content/materiais",
-        "pages":[
-          {
-            "name":"index",
-            "url":"materiais/index.html",
-            "contentPath":"content/materiais/index.json"
-          }
-        ],
-        "sections":[
-          {
-            "name":"ingredientes",
-            "url":"materiais/ingredientes",
-            "contentPath":"content/materiais/ingredientes",
-            "pages":[
-              {
-                "name":"açúcar",
-                "url":"materiais/ingredientes/açúcar.html",
-                "contentPath":"content/materiais/ingredientes/açúcar.json"
-              },
-              {
-                "name":"flor-doce",
-                "url":"materiais/ingredientes/flor-doce.html",
-                "contentPath":"content/materiais/ingredientes/flor-doce.json"
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "pages":[
+  "name": "content",
+  "url": "",
+  "sectionPath": "content",
+  "contentPath": "content/index.json",
+  "sections": [
+    {
+      "name": "materiais",
+      "url": "materiais",
+      "sectionPath": "content/materiais",
+      "pages": [
         {
-          "name":"index",
-          "url":"index.html",
-          "contentPath":"content/index.json"
+          "name": "açúcar",
+          "url": "materiais/açúcar.html",
+          "contentPath": "content/materiais/açúcar.json"
+        },
+        {
+          "name": "flor-doce",
+          "url": "materiais/flor-doce.html",
+          "contentPath": "content/materiais/flor-doce.json"
         }
-    ]
-   }
+      ],
+      "contentPath": "content/materiais/index.json"
+    }
+  ]
 }
 
 folders default:
