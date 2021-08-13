@@ -48,81 +48,93 @@ Will result on:
       |--help
       index.html
 
-## HTML Generation process
-During the generation process cake-ssg will look  for content files on the *content* folder and search for the correspondent template on the *templates* folder, following the next rules:
+## Rendering HTML Process
+To start the rendering html process call function `bake` of cake object.
+
+During the rendering process cake-ssg will look  for content files on the *content* folder and search for the correspondent template on the *templates* folder, following the next rules:
 
 1. First of all, cake-ssg will search for templates on the same folder structure and with the same filename of the content file, for example, to the content file  `content/docs/posts/2021-08-10.json`, cake will search for a template the `templates/docs/posts/2021-08-10.hbs`
  2. If there isn't a template that fullfill the rule above, cake-ssg will search for a template at the same folder structure but with the filename equal to `page`, for example, to the content file `content/docs/posts/2021-08-10.json`, cake will search for the template `templates/docs/posts/page.hbs`
  3. If there isn't a template that fullfill both of the rules above, cake-ssg will search for a template with filename `page` on the `default` folder inside the `templates` folder, for example, to the content file `content/docs/posts/2021-08-10.json`, cake will search for the template `templates/default/page.hbs`
 
+## Template Input Object
+Cake-ssg works with two types of template input objects, Page Input Object and Section Input Object.
 
-Para não esquecer:
-Ordem para buscar templates de page:
-  1 - mesmo caminho que arquivo de conteúdo, mesmo nome do arquivo de conteúdo
-  2 - mesmo caminho que arquivo de conteúdo, nome do template = "page"
-  3 - diretório raiz dos templates, nome do template = "page"
+Page Input Object will be passed to the template to render regular pages. Section Input Object will be passed to index pages. Below are the structure of these Input Objects:
 
-Mesma ordem para buscar index (section), só que nome do template default é "index".
+* Page Input Object
 
-Regra para geração de index.html para section:
-  Só irá gerar se o arquivo index existir na section(diretório) nas pastas de conteúdo
-
-Conteúdo passado para uma page: 
-{
-  rootSection: árvore de dados globais
-  meta: {
-    name, 
-    url,
-    contentPath
-  }, 
-  content: {
-    <!-- conteúdo do arquivo de index da section -->
-  }
-}
-
-Conteúdo passado para uma section: 
-{
-  rootSection: árvore de dados globais
-  meta: {
-    name, 
-    url,
-    sectionPath,
-    contentPath,
-    sections: [], <!-- lista de meta section filhas -->
-    pages: [] <!-- lista de meta pages filhas --> 
-  }, 
-  content: {
-    <!-- conteúdo do arquivo de index da section -->
-  }
-}
-
-exemplo de globaldata:
-{
-  "name": "content",
-  "url": "",
-  "sectionPath": "content",
-  "contentPath": "content/index.json",
-  "sections": [
-    {
-      "name": "materiais",
-      "url": "materiais",
-      "sectionPath": "content/materiais",
-      "pages": [
-        {
-          "name": "açúcar",
-          "url": "materiais/açúcar.html",
-          "contentPath": "content/materiais/açúcar.json"
-        },
-        {
-          "name": "flor-doce",
-          "url": "materiais/flor-doce.html",
-          "contentPath": "content/materiais/flor-doce.json"
+      {
+        rootSection: globalData <!--see definition on section GlobalData -->
+        meta: {
+          name, <!-- page name, content filename without extension -->
+          url,
+          contentPath <!-- path of the content file -->
+        }, 
+        content: {
+          <!-- data from the content file -->
         }
-      ],
-      "contentPath": "content/materiais/index.json"
+      } 
+
+* Section Input Object
+
+      {
+        rootSection: globalData <!--see definition on section GlobalData -->
+        meta: {
+          name, <!-- page name, content filename without extension --> 
+          url,
+          sectionPath,
+          contentPath, <!-- path of the content file, in this case will always be the index.json file -->
+          sections: [], <!-- list with the meta data of the children sections -->
+          pages: [] <!-- list with the meta data of the children pages --> 
+        }, 
+        content: {
+          <!-- data from the index.json content file -->
+        }
+      }
+
+### GlobalData
+Global data have meta data of all pages and sections of the *content* folder, below an example of globaldata.
+
+
+    {
+      "name": "content",
+      "url": "",
+      "sectionPath": "content",
+      "contentPath": "content/index.json",
+      "sections": [
+        {
+          "name": "ingredients",
+          "url": "ingredients",
+          "sectionPath": "content/ingredients",
+          "pages": [
+            {
+              "name": "sugar",
+              "url": "ingredients/sugar.html",
+              "contentPath": "content/ingredients/sugar.json"
+            },
+            {
+              "name": "flour",
+              "url": "ingredients/flour.html",
+              "contentPath": "content/ingredients/flour.json"
+            }
+          ],
+          "contentPath": "content/ingredients/index.json"
+        }
+      ]
     }
-  ]
-}
+
+## Configuration
+It's possible to change some cake-ssg configurations by passing a CakeOptions object to the constructor of Cake.
+
+* outputfolder : change the output folder of rendered html, default value is `dist`. Example:
+
+      const cakeOptions = {
+        output: "out"
+      }
+      const cake = new Cake(cakeOptions);
+
+## Handlebars
 
 folders default:
   CONTENT_FOLDER = 'content';
