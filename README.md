@@ -125,9 +125,9 @@ Global data have meta data of all pages and sections of the *content* folder, be
     }
 
 ## Configuration
-It's possible to change some cake-ssg configurations by passing a CakeOptions object to the constructor of Cake.
+It's possible to change some cake-ssg configurations by passing a CakeOptions object to the Cake constructor.
 
-* outputfolder : change the output folder of rendered html, default value is `dist`. Example:
+* outputfolder (string): change the output folder of rendered html, default value is `dist`. Example:
 
       const cakeOptions = {
         output: "out"
@@ -135,14 +135,48 @@ It's possible to change some cake-ssg configurations by passing a CakeOptions ob
       const cake = new Cake(cakeOptions);
 
 ## Handlebars
+Cake-ssg render pages based on handlebars templates, as handlebars can work with partials it's possible to put your templates partials in a partials folder called `partials`.
 
-folders default:
-  CONTENT_FOLDER = 'content';
-  TEMPLATE_FOLDER = 'templates';
-  DEFAULT_FOLDER = 'default';
-  partialsFolder: 'partials' <!-- específico do handlebars -->
+To make the templates more flexible, cake-ssg uses [wax-on](https://www.npmjs.com/package/wax-on), a node module that allows template inheritance with the `block` and `extends`, on the rendering processing.
 
-Detalhar as opções que podem ser passadas para o cake no CakeOptions
+### Handlebars Built In Helpers
+Cake-ssg define some Built In Helpers to make easy to write the templates:
 
+* useContent: Get the data from another page based on the content path and use it to render html according to the template passed to the helper. Example:
+
+      {{#useContent 'content/ingredients/sugar.json' }}
+        <div>
+          <a href="{{ meta.url }}">
+            <img src="{{ content.imagem }}" alt="{{ content.nome }}"/>
+            <div class="qtd">{{ ../quantidade }}</div>
+          </a>
+        </div>  
+      {{/useContent}}
+
+### Handlebars Configuration
+It's possible to change some cake-ssg configurations related to handlebars by configuring it at CakeOptions object and passing to the Cake constructor. 
+
+* partialsFolder (string): change the partials folder, default value is `partials`. Example:
+
+      const cakeOptions = {
+        handlebars: {
+          partialsFolder: "handlebarsPartials"
+        }        
+      }
+      const cake = new Cake(cakeOptions);
+
+* helpers: (Record<string, Handlebars.HelperDelegate>). Example:
+
+      const cakeOptions = {
+        handlebars: {
+          helpers: {
+            'repeat': (n, block) => {
+              /* helper code */
+            },
+          }
+        }
+      }
+
+      const cake = new Cake(cakeOptions);
 
  
