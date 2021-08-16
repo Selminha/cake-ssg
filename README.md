@@ -1,61 +1,83 @@
-# **cake-ssg (Cake Static Site Generator)**
+# Cake Static Site Generator
 
-Cake-ssg is a node static site generator. It merges your content files with your templates to generate the html of your site.
+Cake-ssg is a Static Site Generator made from coders for coders. It is a node module instead of a CLI tool, so the idea here is that you create your own Nodejs project in order to build your site and use cake-ssg as part of the build process.  
 
-**Note:** Today cake-ssg only supports handlebars template engine, is our intention to give support to other templates engines in the future.
+As it is with every Static Site Generator, cake-ssg's work is done at build time. It will pick up data from your content folder, mix it with templates from your template folder and generate the static HTML files for your site that you can deploy to any HTTP server.  
+
+Cake-ssg deals only with HTML, allowing you to produce your own CSS and JS anyway you want.  
+
+**Note:** Currently cake-ssg only has support for JSON formatted input and the Handlebars template engine. Support for other input formats and template engines is to be included in the roadmap.
 
 ## Prerequisites
-* latest version of node.js, you can download it from [official page](https://nodejs.org/en/).
+* Latest version of Nodejs, you can download it from [official page](https://nodejs.org/en/)
 
 ## Installation instructions
-* Install the prerequisites (see above)
-* Install cake-ssg:
-  * To install the latest version on npm globally, run:
-    ```
-    npm install -g cake-ssg
-    ```
-  * To install the latest version on npm locally and save it in your package's package.json file, run:
-    ```
-    npm install cake-ssg
-    ```
-  
-## Usage
-After install cake-ssg on your project, create a  *content* folder, to your content files, and a *templates* folder, to your templates.
+Create a new node project:
+```
+  npm init
+```
+Install cake-ssg:
+```
+  npm install cake-ssg
+```
+Create a *content* folder to store your content files and a *templates* folder to store your template files. Create also a javascript source file. The structure of your project may look something like this:
 
-Now you can require or import cake-ssg and use in your project:
+    /content
+    /node_modules
+    /templates
+    index.js
+    package-lock.json
+    package.json
+
+Now in index.js you can require cake-ssg and use it:
 
     const { Cake } = require('cake-ssg');
+
     new Cake().bake();
 
-By default cake-ssg will output processed html files to *dist* folder.
+By default cake-ssg will output processed html files to the *dist* folder. You can run your project by running **node index**. However, this simple setup will output nothing because you still have no content and no templates.  
 
-## Site Structure
-The final structure of your site will be based on the structure defined in the content folder, for example, if you have the next structure on your content folder:
+## Content
 
-    content
-      |--docs
-        |--posts
-        2021-08-10.json
-      |--help
-      index.json
+Explain content files.
 
-Will result on:
+## Templates
 
-      dist
-      |--docs
-        |--posts
-        2021-08-10.html
-      |--help
-      index.html
+Explain template files.
 
-## Rendering HTML Process
-To start the rendering html process call function `bake` of cake object.
 
-During the rendering process cake-ssg will look  for content files on the *content* folder and search for the correspondent template on the *templates* folder, following the next rules:
+## Understanding the Rendering Process
 
-1. First of all, cake-ssg will search for templates on the same folder structure and with the same filename of the content file, for example, to the content file  `content/docs/posts/2021-08-10.json`, cake will search for a template the `templates/docs/posts/2021-08-10.hbs`
- 2. If there isn't a template that fullfill the rule above, cake-ssg will search for a template at the same folder structure but with the filename equal to `page`, for example, to the content file `content/docs/posts/2021-08-10.json`, cake will search for the template `templates/docs/posts/page.hbs`
- 3. If there isn't a template that fullfill both of the rules above, cake-ssg will search for a template with filename `page` on the `default` folder inside the `templates` folder, for example, to the content file `content/docs/posts/2021-08-10.json`, cake will search for the template `templates/default/page.hbs`
+Explain pages and sections.
+
+
+### Pages
+
+Cake-ssg will try to render an html file for each content file in the *content* folder. In order to do that, it will search for the correspondent template file in the *templates* folder, according to the following rules:
+
+1. Exact same path and filename of the content file, changing the file extension from the input format (e.g. .json) to the template extension (e.g. .hbs);
+
+2. Same folder structure but with the filename equal to `page`;
+
+3. Filename `page` on the `templates/default` folder inside the `templates` folder. s
+
+For example, for the content file `content/docs/posts/2021-08-10.json`, cake-ssg will retrieve the first template on this list:
+- `templates/docs/posts/2021-08-10.hbs`
+- `templates/docs/posts/page.hbs`
+- `templates/default/page.hbs`
+
+The html file will always be rendered with the content file path, independent of which template file has ben used. In this case, the html will be outputted at `dist/docs/posts/2021-08-10.html`. If none of these template files exist, the html will not be rendered. This allows you to have one specific template for each content file, but also generic templates for all content files in a subfolder, and an even more generic template for anything else.
+
+### Sections
+
+Explain sections.
+
+
+
+
+
+
+
 
 ## Template Input Object
 Cake-ssg works with two types of template input objects, Page Input Object and Section Input Object.
