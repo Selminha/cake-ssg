@@ -9,7 +9,7 @@ Cake-ssg deals only with HTML, allowing you to produce your own CSS and JS anywa
 **Note:** Currently cake-ssg only has support for JSON formatted input and the Handlebars template engine. Support for other input formats and template engines is to be included in the roadmap.
 
 ## Prerequisites
-* Latest version of Nodejs, you can download it from [official page](https://nodejs.org/en/)
+* Latest version of Nodejs. You can download it from its [official page](https://nodejs.org/en/).
 
 ## Installation instructions
 Create a new node project:
@@ -39,38 +39,58 @@ By default cake-ssg will output processed html files to the *dist* folder. You c
 
 ## Content
 
-Explain content files.
+Content files are your data. Cake-ssg will try to render an html file for each content file, provided you also have a correspondent template file. Currently cake-ssg only supports JSON formatted content files. This is an example of a valid content file:
+
+```json
+  {
+    "title": "Traveling over Europe",
+    "body": "Nice sunny weather in Santorini, a lot of snow in Amsterdam."
+  }
+```
 
 ## Templates
 
-Explain template files.
+Template files are placeholders for your page structure, intended to be interpolated with different data. Cake-ssg will match a content file with a template file in order to create an html file. Currently cake-ssg only supports Handlebars template files. This is an example of a valid template file:
 
+```html
+  <h2>{{ title }}</h2>
+  <p>{{ body }}</p>
+```
 
 ## Understanding the Rendering Process
 
-Explain pages and sections.
-
-
-### Pages
+Consider the content file `content/docs/posts/traveling-europe.json`, where:
+- **docs/posts/** is the path
+- **traveling-europe** is the filename
+- **.hbs** is the extension
 
 Cake-ssg will try to render an html file for each content file in the *content* folder. In order to do that, it will search for the correspondent template file in the *templates* folder, according to the following rules:
 
-1. Exact same path and filename of the content file, changing the file extension from the input format (e.g. .json) to the template extension (e.g. .hbs);
+1. Same path and filename of the content file;
 
-2. Same folder structure but with the filename equal to `page`;
+2. Same path but with the filename equal to `page`;
 
-3. Filename `page` on the `templates/default` folder inside the `templates` folder. s
+3. Default path `templates/default` with the filename equal to `page`.  
 
-For example, for the content file `content/docs/posts/2021-08-10.json`, cake-ssg will retrieve the first template on this list:
-- `templates/docs/posts/2021-08-10.hbs`
+For example, for the content file `content/docs/posts/traveling-europe.json`, cake-ssg will retrieve the first template on this list:
+- `templates/docs/posts/traveling-europe.hbs`
 - `templates/docs/posts/page.hbs`
 - `templates/default/page.hbs`
 
-The html file will always be rendered with the content file path, independent of which template file has ben used. In this case, the html will be outputted at `dist/docs/posts/2021-08-10.html`. If none of these template files exist, the html will not be rendered. This allows you to have one specific template for each content file, but also generic templates for all content files in a subfolder, and an even more generic template for anything else.
+The html file will always be written to the *output* folder with the same path of the content file, independent of which template file has ben used. In this case, the html will be outputted at `dist/docs/posts/traveling-europe.html`. This allows you to have one specific template for each content file, but also generic templates for all content files in a subfolder, and an even more generic template for anything else. If none of these template files exist, the html will not be rendered.
 
-### Sections
 
-Explain sections.
+## Pages, Sections and Home
+
+Every content file is treated as a **Page**, with a single exception: if a content file is named as `index`, then this is treated as a **Section**. You can see Sections as the pages for your folders. They will have different metadata available, such as references for all pages and subsections within the section.
+
+The Home page of your site is also treated as a Section, with the exception that it does not need a content file in order to be rendered; just having the template at `templates/index.hbs` is enough.
+
+
+
+
+
+
 
 
 
