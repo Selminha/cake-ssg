@@ -6,7 +6,7 @@ As it is with every Static Site Generator, cake-ssg's work is done at build time
 
 Cake-ssg deals only with HTML, allowing you to produce your own CSS and JS anyway you want.  
 
-**Note:** Currently cake-ssg only has support for JSON formatted input and the Handlebars template engine. Support for other input formats and template engines is to be included in the roadmap.
+**Note:** Currently cake-ssg only has support for [JSON](https://www.json.org) formatted input and the [Handlebars](https://handlebarsjs.com) template engine. Support for other input formats and template engines is to be included in the roadmap.
 
 ## Prerequisites
 * Latest version of Nodejs. You can download it from its [official page](https://nodejs.org/en/).
@@ -53,8 +53,8 @@ Content files are your data. Cake-ssg will try to render an html file for each c
 Template files are placeholders for your page structure, intended to be interpolated with different data. Cake-ssg will match a content file with a template file in order to create an html file. Currently cake-ssg only supports Handlebars template files. This is an example of a valid template file:
 
 ```html
-  <h2>{{ title }}</h2>
-  <p>{{ body }}</p>
+  <h2>{{ content.title }}</h2>
+  <p>{{ content.body }}</p>
 ```
 
 ## Understanding the Rendering Process
@@ -62,7 +62,7 @@ Template files are placeholders for your page structure, intended to be interpol
 Consider the content file `content/docs/posts/traveling-europe.json`, where:
 - **docs/posts/** is the path
 - **traveling-europe** is the filename
-- **.hbs** is the extension
+- **.json** is the extension
 
 Cake-ssg will try to render an html file for each content file in the *content* folder. In order to do that, it will search for the correspondent template file in the *templates* folder, according to the following rules:
 
@@ -77,68 +77,58 @@ For example, for the content file `content/docs/posts/traveling-europe.json`, ca
 - `templates/docs/posts/page.hbs`
 - `templates/default/page.hbs`
 
-The html file will always be written to the *output* folder with the same path of the content file, independent of which template file has ben used. In this case, the html will be outputted at `dist/docs/posts/traveling-europe.html`. This allows you to have one specific template for each content file, but also generic templates for all content files in a subfolder, and an even more generic template for anything else. If none of these template files exist, the html will not be rendered.
+This allows you to have one specific template for each content file, but also generic templates for all content files in a subfolder, and an even more generic template for anything else. The html file will always be written to the *output* folder with the same path of the content file, independent of which template file has ben used. In this case, the html will be outputted at `dist/docs/posts/traveling-europe.html`. If none of these template files exist, the html will not be rendered.
 
 
 ## Pages, Sections and Home
 
-Every content file is treated as a **Page**, with a single exception: if a content file is named as `index`, then this is treated as a **Section**. You can see Sections as the pages for your folders. They will have different metadata available, such as references for all pages and subsections within the section.
+Every content file is treated as a **Page**, with a single exception: if a content file is named as `index`, then this is treated as a **Section**. You can see Sections as the pages for your folders. They will have different metadata available, such as references for all pages and subsections within the section. The template file for a section must be named `index.hbs`.
 
 The Home page of your site is also treated as a Section, with the exception that it does not need a content file in order to be rendered; just having the template at `templates/index.hbs` is enough.
 
 
+## Input Objects
 
+When cake-ssg identifies a template to be used with the content, it will parse the template using a specific Input Object that represents that content. Depending on the type of the content - Page or Section - this object is as follows:
 
+### Page Input Object
 
-
-
-
-
-
-
-
-
-
-## Template Input Object
-Cake-ssg works with two types of template input objects, Page Input Object and Section Input Object.
-
-Page Input Object will be passed to the template to render regular pages. Section Input Object will be passed to index pages. Below are the structure of these Input Objects:
-
-* Page Input Object
-
-      {
-        rootSection: globalData <!--see definition on section GlobalData -->
-        meta: {
-          name, <!-- page name, content filename without extension -->
-          url,
-          contentPath <!-- path of the content file -->
-        }, 
-        content: {
-          <!-- data from the content file -->
-        }
-      } 
-
-* Section Input Object
-
-      {
-        rootSection: globalData <!--see definition on section GlobalData -->
-        meta: {
-          name, <!-- page name, content filename without extension --> 
-          url,
-          sectionPath,
-          contentPath, <!-- path of the content file, in this case will always be the index.json file -->
-          sections: [], <!-- list with the meta data of the children sections -->
-          pages: [] <!-- list with the meta data of the children pages --> 
-        }, 
-        content: {
-          <!-- data from the index.json content file -->
-        }
+```json
+    {
+      rootSection: globalData, <!--see definition on section GlobalData -->
+      meta: {
+        name, <!-- page name, content filename without extension -->
+        url,
+        contentPath <!-- path of the content file -->
+      },
+      content: {
+        <!-- data from the content file -->
       }
+    }
+```
+### Section Input Object
+
+```json
+    {
+      rootSection: globalData <!--see definition on section GlobalData -->
+      meta: {
+        name, <!-- page name, content filename without extension -->
+        url,
+        sectionPath,
+        contentPath, <!-- path of the content file, in this case will always be the index.json file -->
+        sections: [], <!-- list with the meta data of the children sections -->
+        pages: [] <!-- list with the meta data of the children pages -->
+      },
+      content: {
+        <!-- data from the index.json content file -->
+      }
+    }
+```
 
 ### GlobalData
 Global data have meta data of all pages and sections of the *content* folder, below an example of globaldata.
 
-
+```json
     {
       "name": "content",
       "url": "",
@@ -165,60 +155,73 @@ Global data have meta data of all pages and sections of the *content* folder, be
         }
       ]
     }
+```
 
 ## Configuration
-It's possible to change some cake-ssg configurations by passing a CakeOptions object to the Cake constructor.
+
+It is possible to change some cake-ssg configurations by passing a CakeOptions object to the Cake constructor.
 
 * outputfolder (string): change the output folder of rendered html, default value is `dist`. Example:
 
-      const cakeOptions = {
-        output: "out"
-      }
-      const cake = new Cake(cakeOptions);
+```javascript
+    const cakeOptions = {
+      output: "out",
+    };
+    const cake = new Cake(cakeOptions);
+```
 
 ## Handlebars
-Cake-ssg render pages based on handlebars templates, as handlebars can work with partials it's possible to put your templates partials in a partials folder called `partials`.
 
-To make the templates more flexible, cake-ssg uses [wax-on](https://www.npmjs.com/package/wax-on), a node module that allows template inheritance with the `block` and `extends`, on the rendering processing.
+The default template engine of cake-ssg is [Handlebars](https://handlebarsjs.com). Please check out its documentation in order to understand how to build template files.  
 
-### Handlebars Built In Helpers
-Cake-ssg define some Built In Helpers to make easy to write the templates:
+Handlebars has the concept of "partials", so in order to treat templates as partials you should put them in a special folder. The default path is `/partials`, but this can be changed (see Handlebars Configuration below).  
 
-* useContent: Get the data from another page based on the content path and use it to render html according to the template passed to the helper. Example:
+Also, to make the templates more flexible, cake-ssg includes [wax-on](https://www.npmjs.com/package/wax-on), a node module that allows template inheritance with the `block` and `extends` Handlebars block helpers.  
 
-      {{#useContent 'content/ingredients/sugar.json' }}
-        <div>
-          <a href="{{ meta.url }}">
-            <img src="{{ content.imagem }}" alt="{{ content.nome }}"/>
-            <div class="qtd">{{ ../quantidade }}</div>
-          </a>
-        </div>  
-      {{/useContent}}
 
 ### Handlebars Configuration
-It's possible to change some cake-ssg configurations related to handlebars by configuring it at CakeOptions object and passing to the Cake constructor. 
+
+It's possible to change some cake-ssg configurations related to Handlebars by adding a HandlebarsOptions object to the CakeOptions object and passing it to the Cake constructor. 
 
 * partialsFolder (string): change the partials folder, default value is `partials`. Example:
 
-      const cakeOptions = {
-        handlebars: {
-          partialsFolder: "handlebarsPartials"
-        }        
-      }
-      const cake = new Cake(cakeOptions);
+```javascript
+    const cakeOptions = {
+      handlebars: {
+        partialsFolder: "handlebarsPartials"
+      }        
+    }
+    const cake = new Cake(cakeOptions);
+```
 
-* helpers: (Record<string, Handlebars.HelperDelegate>). Example:
+* helpers: (Record<string, Handlebars.HelperDelegate>). You can create your own set of helpers. Example:
 
-      const cakeOptions = {
-        handlebars: {
-          helpers: {
-            'repeat': (n, block) => {
-              /* helper code */
-            },
+```javascript
+    const cakeOptions = {
+      handlebars: {
+        helpers: {
+          'bold': (options) => {
+            return new Handlebars.SafeString('<div class="mybold">' + options.fn(this) + "</div>");
           }
         }
       }
+    }
+    const cake = new Cake(cakeOptions);
+```
 
-      const cake = new Cake(cakeOptions);
+### Handlebars Built In Helpers
 
- 
+Cake-ssg defines some Handlebars Helpers of its own:
+
+* useContent: Get the data from another page based on the content path and use it to render html according to the template passed to the helper. Example:
+
+```html
+    {{#useContent 'content/ingredients/sugar.json' }}
+      <div>
+        <a href="{{ meta.url }}">
+          <img src="{{ content.imagem }}" alt="{{ content.nome }}"/>
+          <div class="qtd">{{ ../quantidade }}</div>
+        </a>
+      </div>  
+    {{/useContent}}
+```
